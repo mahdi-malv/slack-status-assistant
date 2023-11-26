@@ -1,4 +1,5 @@
 # Slack status assistant
+
 > **Why is this created?**
 > 
 > At the moment I live 20m away from my office.
@@ -7,8 +8,15 @@
 > 
 > In the future, there could be some location detection and automatic status change. Who knows :)?
 
+<img src="images/screenshot1.png" width="200" alt="screenshot" />
+
 The project doesn't intend to follow any "clear architecture" patterns or ...,
-instead I wanted to try new things and have some fun with functional approach in the project.
+instead I wanted to try new things and have some fun with functional approach in the project.  
+
+
+**Features**:
+- Multiple commands for different possible situations
+- Console log
 
 ## How to use
 - Clone this repo 
