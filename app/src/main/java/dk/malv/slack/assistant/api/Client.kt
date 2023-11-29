@@ -95,10 +95,10 @@ suspend inline fun <reified T> Client.post(
 /**
  * Suspend function to make a GET request using the specified client.
  *
- * @param to the URL from which the GET request will be sent
+ * @param url the URL from which the GET request will be sent
  * @return the response data of type [T]
  */
-suspend inline fun <reified T> Client.get(to: String): T = withContext(Dispatchers.IO) {
-    client.get(urlString = to)
+suspend inline fun <reified T> Client.get(url: String): T = withContext(Dispatchers.IO) {
+    client.get(urlString = url)
 }
 

@@ -5,6 +5,9 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dk.malv.slack.assistant.api.Client
+import dk.malv.slack.assistant.api.currentStatus
+import dk.malv.slack.assistant.ui.components.CurrentStatus
+import dk.malv.slack.assistant.ui.components.currentStatus
 import dk.malv.slack.assistant.api.setStatus
 import dk.malv.slack.assistant.utils.text.colored
 import dk.malv.slack.assistant.utils.time.Time
@@ -30,6 +33,31 @@ class HomeViewModel(
     val state get() = _state.asStateFlow()
 
     private val wipColor = Color(0xFFDFB64E)
+
+    init {
+        // Update the status on startup
+        updateStatus()
+    }
+
+    /**
+     * Updates the current status of the user
+     */
+    fun updateStatus() {
+        viewModelScope.launch(Dispatchers.Main) {
+            _state.updateInUi {
+                copy(
+                    currentStatus = currentStatus.copy(updating = true),
+                    logs = logs
+                        .plus(Time.now() to "~ Updating status...".colored(Color.Gray))
+                        .toPersistentMap()
+                )
+            }
+            val status = client.currentStatus()
+            _state.updateInUi {
+                copy(currentStatus = status.currentStatus())
+            }
+        }
+    }
 
     fun onCommandClicked(command: Command) {
         viewModelScope.launch(Dispatchers.Main) {
@@ -111,6 +139,7 @@ class HomeViewModel(
             }
 
             allowClicks()
+            updateStatus()
         }
     }
 
@@ -152,5 +181,6 @@ data class HomeUiState(
      * To avoid fucking up the onClick
      */
     val commandBlocked: Boolean = false,
-    val logs: ImmutableMap<Time, AnnotatedString> = persistentMapOf()
+    val logs: ImmutableMap<Time, AnnotatedString> = persistentMapOf(),
+    val currentStatus: CurrentStatus = CurrentStatus.empty()
 )

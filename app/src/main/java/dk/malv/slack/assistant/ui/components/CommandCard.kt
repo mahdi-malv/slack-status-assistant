@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -16,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dk.malv.slack.assistant.R
@@ -35,13 +39,12 @@ import dk.malv.slack.assistant.R
 @Composable
 fun CommandCard(
     title: String,
-    subtitle: String,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)? = null,
     icon: Painter,
     modifier: Modifier = Modifier,
 ) {
     Card(
-        onClick = onClick,
+        onClick = { onClick?.invoke() },
         modifier = modifier
     ) {
         Row(
@@ -63,16 +66,56 @@ fun CommandCard(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
     }
 }
+
+@ExperimentalMaterial3Api
+@Composable
+fun CommandSquare(
+    title: String,
+    icon: Painter,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val squareWidth = (LocalConfiguration.current.screenWidthDp / 4).dp
+
+    Card(
+        onClick = onClick,
+        modifier = modifier
+            .size(squareWidth)
+            .padding(2.dp),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 0.dp
+        ),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(4.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(2.dp),
+                painter = icon,
+                contentDescription = title,
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
 
 /**
  * A simple preview for the [CommandCard] composable
@@ -88,9 +131,21 @@ fun CommandPreview() {
     ) {
         CommandCard(
             title = "Title",
-            subtitle = "Subtitle",
             onClick = {},
             icon = painterResource(R.drawable.ic_clear)
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+@Suppress("UnusedPrivateMember")
+private fun CommandSquarePreview() {
+    CommandSquare(
+        title = "Sample Title",
+        icon = painterResource(R.drawable.ic_home),
+        modifier = Modifier,
+        onClick = {}
+    )
 }

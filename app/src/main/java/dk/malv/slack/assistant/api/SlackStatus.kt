@@ -2,6 +2,7 @@ package dk.malv.slack.assistant.api
 
 import dk.malv.slack.assistant.api.model.Profile
 import dk.malv.slack.assistant.api.model.ProfileRequestBody
+import dk.malv.slack.assistant.api.model.UserProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -30,3 +31,14 @@ suspend fun Client.setStatus(
     )
     "\"ok\":true" in json // Definitely needs a better parsing
 }
+
+/**
+ * Gets the user's status on Slack.
+ *
+ * @return A UserProfile representing the user's status.
+ */
+suspend fun Client.currentStatus(): UserProfile = withContext(Dispatchers.IO) {
+    // Make a GET request to retrieve the user's profile from Slack API
+    get("https://slack.com/api/users.profile.get")
+}
+
