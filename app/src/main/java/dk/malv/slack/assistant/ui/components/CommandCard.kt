@@ -1,9 +1,9 @@
 package dk.malv.slack.assistant.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,13 +17,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dk.malv.slack.assistant.R
+import androidx.compose.ui.unit.sp
 
 /**
  * A composable function that simply acts as a card item
@@ -39,9 +39,9 @@ import dk.malv.slack.assistant.R
 @Composable
 fun CommandCard(
     title: String,
-    onClick: (() -> Unit)? = null,
-    icon: Painter,
+    emojiCode: String,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     Card(
         onClick = { onClick?.invoke() },
@@ -52,12 +52,12 @@ fun CommandCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Image(
+            Text(
                 modifier = Modifier
                     .size(64.dp)
                     .padding(8.dp),
-                painter = icon,
-                contentDescription = title,
+                text = emojiCode,
+                style = TextStyle(textAlign = TextAlign.Center, baselineShift = BaselineShift.Subscript),
             )
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -77,11 +77,11 @@ fun CommandCard(
 @Composable
 fun CommandSquare(
     title: String,
-    icon: Painter,
+    emojiCode: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val squareWidth = (LocalConfiguration.current.screenWidthDp / 4).dp
+    val squareWidth = (LocalConfiguration.current.screenWidthDp / 5).dp
 
     Card(
         onClick = onClick,
@@ -96,16 +96,17 @@ fun CommandSquare(
     ) {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(4.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                modifier = Modifier
-                    .size(32.dp)
-                    .padding(2.dp),
-                painter = icon,
-                contentDescription = title,
+            Text(
+                text = emojiCode,
+                style = TextStyle(
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp
+                ),
             )
             Text(
                 text = title,
@@ -117,9 +118,6 @@ fun CommandSquare(
 }
 
 
-/**
- * A simple preview for the [CommandCard] composable
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
@@ -132,7 +130,7 @@ fun CommandPreview() {
         CommandCard(
             title = "Title",
             onClick = {},
-            icon = painterResource(R.drawable.ic_clear)
+            emojiCode = "❌"
         )
     }
 }
@@ -144,7 +142,7 @@ fun CommandPreview() {
 private fun CommandSquarePreview() {
     CommandSquare(
         title = "Sample Title",
-        icon = painterResource(R.drawable.ic_home),
+        emojiCode = "🚶‍♂️",
         modifier = Modifier,
         onClick = {}
     )

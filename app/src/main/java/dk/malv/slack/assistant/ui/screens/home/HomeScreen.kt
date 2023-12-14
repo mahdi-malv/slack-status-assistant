@@ -2,12 +2,12 @@ package dk.malv.slack.assistant.ui.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -16,34 +16,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import dk.malv.slack.assistant.R
 import dk.malv.slack.assistant.ui.components.CommandSquare
 import dk.malv.slack.assistant.ui.components.Console
 import dk.malv.slack.assistant.ui.components.CurrentStatusCard
+import dk.malv.slack.assistant.ui.components.CustomStatus
+import dk.malv.slack.assistant.utils.emoji.SlackEmoji
+import dk.malv.slack.assistant.utils.emoji.emojiText
 import dk.malv.slack.assistant.utils.text.colored
 
 /**
  * Main screen of the app
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel
 ) {
     val state by viewModel.state.collectAsState()
-
-    val clearIcon = painterResource(R.drawable.ic_clear)
-    val walkIcon = painterResource(R.drawable.ic_walk)
-    val runIcon = painterResource(R.drawable.ic_runner)
-    val leaveIcon = painterResource(R.drawable.ic_leave)
-    val homeIcon = painterResource(R.drawable.ic_home)
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -60,6 +54,7 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            // == Status ==
             CurrentStatusCard(
                 currentStatus = state.currentStatus,
                 onReloadClick = viewModel::updateStatus,
@@ -67,40 +62,31 @@ fun HomeScreen(
                     .fillMaxWidth(0.6f)
             )
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(4f),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
+            // == Commands ==
+            LazyRow {
                 items(
                     items = listOf(
-                        Command(
+                        SlackEmoji.CLEAR.toCommand(
                             id = "clear",
                             title = "Clear status",
-                            iconPainter = clearIcon
                         ),
-                        Command(
+
+                        SlackEmoji.WALK.toCommand(
                             id = "commute30",
-                            title = "Be at work in 30m",
-                            iconPainter = walkIcon
+                            title = "Commuting (30)"
                         ),
-                        Command(
+                        SlackEmoji.RUN.toCommand(
                             id = "nearby",
-                            title = "Almost 5m away",
-                            iconPainter = runIcon
+                            title = "Nearby (5)",
                         ),
-                        Command(
+                        SlackEmoji.HUT.toCommand(
                             id = "tomo",
                             title = "Off until tomorrow",
-                            iconPainter = leaveIcon
                         ),
-                        Command(
+                        SlackEmoji.HOME.toCommand(
                             id = "next_week",
                             title = "Off until next week",
-                            iconPainter = homeIcon
-                        ),
+                        )
                     )
                 ) {
                     CommandSquare(
@@ -115,15 +101,27 @@ fun HomeScreen(
                                 viewModel.onCommandClicked(it)
                             }
                         },
-                        icon = it.iconPainter
+                        emojiCode = it.emojiText
                     )
                 }
             }
+
+            // == Custom time ==
+            CustomStatus(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onApply = viewModel::onCustomStatus,
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // == Console ==
             Console(
                 logs = state.logs,
+                onClear = viewModel::clearLogs,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(3f)
             )
         }
     }
@@ -132,7 +130,13 @@ fun HomeScreen(
 data class Command(
     val id: String,
     val title: String,
-    val iconPainter: Painter,
+    val emojiText: String = ""
 ) {
     companion object
 }
+
+fun SlackEmoji.toCommand(
+    id: String = this.code,
+    title: String = this.suggestedMessage,
+    emojiText: String = this.emojiText()
+) = Command(id, title, emojiText)
