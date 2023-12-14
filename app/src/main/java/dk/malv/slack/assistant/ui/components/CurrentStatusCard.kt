@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dk.malv.slack.assistant.R
 import dk.malv.slack.assistant.api.model.UserProfile
+import dk.malv.slack.assistant.utils.emoji.SlackEmoji
+import dk.malv.slack.assistant.utils.emoji.emojiText
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -40,7 +42,7 @@ data class CurrentStatus(
     val isEmpty get() = statusText.isEmpty() && statusEmoji.isEmpty()
 
     fun endTime(): String {
-        val instant = Instant.ofEpochMilli(statusExpiration)
+        val instant = Instant.ofEpochMilli(statusExpiration * 1000) // Convert to milliseconds
         val formatter = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.systemDefault())
@@ -58,7 +60,7 @@ data class CurrentStatus(
     }
 }
 
-fun UserProfile.currentStatus(): CurrentStatus = CurrentStatus(
+fun UserProfile.asUiStatus(): CurrentStatus = CurrentStatus(
     statusText = statusText,
     statusEmoji = statusEmoji,
     statusExpiration = statusExpiration,
@@ -110,7 +112,7 @@ fun CurrentStatusCard(
                     modifier = Modifier.align(Alignment.Center),
                     text = "No status set",
                     style = MaterialTheme.typography.titleSmall,
-                    color = Color(0xFFD5A11E)
+                    color = Color(0xFF6D6A61)
                 )
             }
         }
@@ -126,11 +128,13 @@ fun CurrentStatusCard(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(R.drawable.ic_slack),
-                contentDescription = currentStatus.statusText,
+
+            Text(
+                text = SlackEmoji.entries.find { it.code == currentStatus.statusEmoji }?.emojiText()
+                    ?: currentStatus.statusEmoji,
                 modifier = Modifier.size(24.dp)
             )
+
 
             Column(
                 modifier = Modifier
@@ -170,7 +174,7 @@ fun CurrentStatusCardPreview() {
     val status = remember {
         CurrentStatus(
             "Walking home",
-            "😊",
+            ":thought_balloon:",
             statusExpiration = 1629950400,
             updating = false
         )

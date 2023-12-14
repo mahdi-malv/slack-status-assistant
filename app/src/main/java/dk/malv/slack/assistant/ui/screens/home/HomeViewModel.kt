@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import dk.malv.slack.assistant.api.Client
 import dk.malv.slack.assistant.api.currentStatus
 import dk.malv.slack.assistant.ui.components.CurrentStatus
-import dk.malv.slack.assistant.ui.components.currentStatus
+import dk.malv.slack.assistant.ui.components.asUiStatus
 import dk.malv.slack.assistant.api.setStatus
+import dk.malv.slack.assistant.utils.emoji.SlackEmoji
+import dk.malv.slack.assistant.utils.emoji.emojiText
 import dk.malv.slack.assistant.utils.text.colored
 import dk.malv.slack.assistant.utils.time.Time
 import dk.malv.slack.assistant.utils.time.now
@@ -54,7 +56,28 @@ class HomeViewModel(
             }
             val status = client.currentStatus()
             _state.updateInUi {
-                copy(currentStatus = status.currentStatus())
+                copy(currentStatus = status.asUiStatus())
+            }
+        }
+    }
+
+    /**
+     * Sets the user's status on Slack with custom time, emoji, and text.
+     */
+    fun onCustomStatus(minutes: Int, text: String, emoji: SlackEmoji) {
+        viewModelScope.launch(Dispatchers.Main) {
+            client.setStatus(
+                statusText = text.ifEmpty { emoji.suggestedMessage },
+                statusEmoji = emoji.code,
+                expirationTime = {
+                    LocalDateTime.now()
+                        .plusMinutes(minutes.toLong())
+                        .atZone(ZoneId.systemDefault())
+                        .toEpochSecond()
+                }
+            ).let {
+                it.logResult(emoji.emojiText())
+                updateStatus()
             }
         }
     }
@@ -72,38 +95,41 @@ class HomeViewModel(
                     ).logResult("❌")
                 }
                 "commute30" -> {
-                    log("~ \uD83D\uDEB6\u200D♂\uFE0F 30-min-away ⌛".colored(wipColor))
+                    val emoji = SlackEmoji.WALK
+                    log("~ ${emoji.emojiText()} commute-30 ⌛".colored(wipColor))
                     client.setStatus(
-                        statusText = "Will be at the office in 30 minutes",
-                        statusEmoji = ":walking:",
+                        statusText = emoji.suggestedMessage,
+                        statusEmoji = emoji.code,
                         expirationTime = {
                             LocalDateTime.now()
                                 .plusMinutes(30)
                                 .atZone(ZoneId.systemDefault())
                                 .toEpochSecond()
                         }
-                    ).logResult("\uD83D\uDEB6\u200D♂\uFE0F")
+                    ).logResult(emoji.emojiText())
                 }
 
                 "nearby" -> {
-                    log("~ \uD83D\uDEB6\u200D♂\uFE0F 5-min-away ⌛".colored(wipColor))
+                    val emoji = SlackEmoji.RUN
+                    log("~ ${emoji.emojiText()} 5-min-away ⌛".colored(wipColor))
                     client.setStatus(
-                        statusText = "Will be at the office in 5 minutes",
-                        statusEmoji = ":walking:",
+                        statusText = emoji.suggestedMessage,
+                        statusEmoji = emoji.code,
                         expirationTime = {
                             LocalDateTime.now()
                                 .plusMinutes(5)
                                 .atZone(ZoneId.systemDefault())
                                 .toEpochSecond()
                         }
-                    ).logResult("\uD83D\uDEB6\u200D♂\uFE0F")
+                    ).logResult(emoji.emojiText())
                 }
 
                 "tomo" -> {
-                    log("~ \uD83D\uDED6 Off-for-the-day ⌛".colored(wipColor))
+                    val emoji = SlackEmoji.HUT
+                    log("~ ${emoji.emojiText()} Off-for-the-day ⌛".colored(wipColor))
                     client.setStatus(
-                        statusText = "Off for the day",
-                        statusEmoji = ":hut:",
+                        statusText = emoji.suggestedMessage,
+                        statusEmoji = emoji.code,
                         expirationTime = {
                             LocalDateTime.now()
                                 .plusDays(1)
@@ -111,14 +137,15 @@ class HomeViewModel(
                                 .atZone(ZoneId.systemDefault())
                                 .toEpochSecond()
                         }
-                    ).logResult("\uD83D\uDED6")
+                    ).logResult(emoji.emojiText())
                 }
 
                 "next_week" -> {
-                    log("~ \uD83D\uDED6 Off-for-the-week ⌛".colored(wipColor))
+                    val emoji = SlackEmoji.HUT
+                    log("~ ${emoji.emojiText()} Off-for-the-week ⌛".colored(wipColor))
                     client.setStatus(
                         statusText = "Off for the week",
-                        statusEmoji = ":hut:",
+                        statusEmoji = emoji.code,
                         expirationTime = {
                             LocalDateTime
                                 .now()
@@ -127,7 +154,7 @@ class HomeViewModel(
                                 .atZone(ZoneId.systemDefault())
                                 .toEpochSecond()
                         }
-                    ).logResult("\uD83D\uDED6")
+                    ).logResult(emoji.emojiText())
                 }
 
                 else -> {
@@ -140,6 +167,12 @@ class HomeViewModel(
 
             allowClicks()
             updateStatus()
+        }
+    }
+
+    fun clearLogs() {
+        _state.updateInUi {
+            copy(logs = persistentMapOf())
         }
     }
 
