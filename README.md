@@ -8,7 +8,7 @@
 > 
 > In the future, there could be some location detection and automatic status change. Who knows :)?
 
-<img src="images/screenshot1.png" width="200" alt="screenshot" />
+<img src="images/screenshot2.png" width="200" alt="screenshot" />
 
 The project doesn't intend to follow any "clear architecture" patterns or ...,
 instead I wanted to try new things and have some fun with functional approach in the project.  
