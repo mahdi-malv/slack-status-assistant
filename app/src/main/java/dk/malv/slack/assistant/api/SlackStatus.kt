@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
  *                      It defaults to 7:00 AM of the next day.
  * @return A boolean indicating the success of the operation.
  */
-suspend fun Client.setStatus(
+suspend fun SlackAPIClient.setStatus(
     statusText: String,
     statusEmoji: String,
     expirationTime: () -> Long
@@ -25,7 +25,7 @@ suspend fun Client.setStatus(
         statusEmoji,
         expirationTime()
     )
-    val json: String = post(
+    val json: String = postRequest(
         url = "https://slack.com/api/users.profile.set",
         body = ProfileRequestBody(profile)
     )
@@ -37,8 +37,8 @@ suspend fun Client.setStatus(
  *
  * @return A UserProfile representing the user's status.
  */
-suspend fun Client.currentStatus(): UserProfile = withContext(Dispatchers.IO) {
+suspend fun SlackAPIClient.currentStatus(): UserProfile = withContext(Dispatchers.IO) {
     // Make a GET request to retrieve the user's profile from Slack API
-    get("https://slack.com/api/users.profile.get")
+    getRequest("https://slack.com/api/users.profile.get")
 }
 

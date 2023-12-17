@@ -45,12 +45,14 @@ import dk.malv.slack.assistant.utils.emoji.emojiText
  * ```kt
  * CustomStatus(
  *     modifier = Modifier,
+ *     clicksAllowed = true,
  *     onApply = { minutes, text, emoji ->
  *         // Handle the apply button click event
  *     }
  * )
  *```
  *
+ * @param clicksAllowed Whether clicks are allowed on the UI
  * @param modifier The modifier for the layout
  * @param onApply Callback function when the apply button is clicked, providing minutes, text, and selected emoji
  */
@@ -58,6 +60,7 @@ import dk.malv.slack.assistant.utils.emoji.emojiText
 @Composable
 fun CustomStatus(
     modifier: Modifier = Modifier,
+    clicksAllowed: Boolean = true,
     onApply: (minutes: Int, text: String, emoji: SlackEmoji) -> Unit
 ) = Card(
     modifier = modifier.padding(16.dp),
@@ -69,6 +72,7 @@ fun CustomStatus(
 ) {
     val (sliderPosition, updateSliderPosition) = remember { mutableFloatStateOf(0f) }
     val (textFieldText, updateText) = remember { mutableStateOf("ETA") }
+    var previousSavedText by remember { mutableStateOf(textFieldText) }
 
     Column(
         modifier = Modifier.padding(8.dp)
@@ -79,7 +83,12 @@ fun CustomStatus(
 
         LaunchedEffect(selectedEmoji) {
             // Update the text due to emoji selection
-            updateText(selectedEmoji?.suggestedMessage ?: "ETA")
+            if (selectedEmoji != null) {
+                previousSavedText = textFieldText
+                updateText(selectedEmoji?.suggestedMessage ?: "ETA")
+            } else {
+                updateText(previousSavedText.ifEmpty { "ETA" })
+            }
         }
 
         // Emojis select row
@@ -153,7 +162,7 @@ fun CustomStatus(
 
         // Apply button
         Button(
-            enabled = sliderPosition.toInt() > 0,
+            enabled = sliderPosition.toInt() > 0 && clicksAllowed,
             onClick = {
                 onApply(sliderPosition.toInt(), textFieldText, selectedEmoji ?: SlackEmoji.LEAVE)
             },
