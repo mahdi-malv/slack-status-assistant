@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
  * This class sets up an HttpClient with various features such as timeout, JSON serialization, logging, response observation,
  * and default request headers.
  */
-class Client {
+class SlackAPIClient {
     /**
      * The configured HttpClient instance for making HTTP requests.
      */
@@ -80,7 +80,7 @@ class Client {
  * @param body The data to be sent in the POST request.
  * @return The response data of type [T].
  */
-suspend inline fun <reified T> Client.post(
+suspend inline fun <reified T> SlackAPIClient.postRequest(
     url: String,
     body: Any
 ): T = withContext(Dispatchers.IO) {
@@ -98,7 +98,7 @@ suspend inline fun <reified T> Client.post(
  * @param url the URL from which the GET request will be sent
  * @return the response data of type [T]
  */
-suspend inline fun <reified T> Client.get(url: String): T = withContext(Dispatchers.IO) {
+suspend inline fun <reified T> SlackAPIClient.getRequest(url: String): T = withContext(Dispatchers.IO) {
     client.get(urlString = url)
 }
 

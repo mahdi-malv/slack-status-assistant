@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dk.malv.slack.assistant.api.Client
+import dk.malv.slack.assistant.api.SlackAPIClient
 import dk.malv.slack.assistant.api.currentStatus
 import dk.malv.slack.assistant.ui.components.CurrentStatus
 import dk.malv.slack.assistant.ui.components.asUiStatus
@@ -29,7 +29,7 @@ import java.time.temporal.TemporalAdjusters
 
 
 class HomeViewModel(
-    private val client: Client = Client() // Needs DI 😂
+    private val slackAPIClient: SlackAPIClient = SlackAPIClient() // Needs DI 😂
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state get() = _state.asStateFlow()
@@ -38,6 +38,7 @@ class HomeViewModel(
 
     init {
         // Update the status on startup
+        // TODO(mahdi): a consistent way to update the status - periodically maybe?
         updateStatus()
     }
 
@@ -54,7 +55,7 @@ class HomeViewModel(
                         .toPersistentMap()
                 )
             }
-            val status = client.currentStatus()
+            val status = slackAPIClient.currentStatus()
             _state.updateInUi {
                 copy(currentStatus = status.asUiStatus())
             }
@@ -66,7 +67,7 @@ class HomeViewModel(
      */
     fun onCustomStatus(minutes: Int, text: String, emoji: SlackEmoji) {
         viewModelScope.launch(Dispatchers.Main) {
-            client.setStatus(
+            slackAPIClient.setStatus(
                 statusText = text.ifEmpty { emoji.suggestedMessage },
                 statusEmoji = emoji.code,
                 expirationTime = {
@@ -82,13 +83,13 @@ class HomeViewModel(
         }
     }
 
-    fun onCommandClicked(command: Command) {
+    fun onQuickCommandClicked(command: Command) {
         viewModelScope.launch(Dispatchers.Main) {
             ignoreClicks()
             when (command.id) {
                 "clear" -> {
                     log("~ ❌ Clearing ⌛".colored(wipColor))
-                    client.setStatus(
+                    slackAPIClient.setStatus(
                         statusText = "",
                         statusEmoji = "",
                         expirationTime = { 0 }
@@ -97,7 +98,7 @@ class HomeViewModel(
                 "commute30" -> {
                     val emoji = SlackEmoji.WALK
                     log("~ ${emoji.emojiText()} commute-30 ⌛".colored(wipColor))
-                    client.setStatus(
+                    slackAPIClient.setStatus(
                         statusText = emoji.suggestedMessage,
                         statusEmoji = emoji.code,
                         expirationTime = {
@@ -112,7 +113,7 @@ class HomeViewModel(
                 "nearby" -> {
                     val emoji = SlackEmoji.RUN
                     log("~ ${emoji.emojiText()} 5-min-away ⌛".colored(wipColor))
-                    client.setStatus(
+                    slackAPIClient.setStatus(
                         statusText = emoji.suggestedMessage,
                         statusEmoji = emoji.code,
                         expirationTime = {
@@ -127,7 +128,7 @@ class HomeViewModel(
                 "tomo" -> {
                     val emoji = SlackEmoji.HUT
                     log("~ ${emoji.emojiText()} Off-for-the-day ⌛".colored(wipColor))
-                    client.setStatus(
+                    slackAPIClient.setStatus(
                         statusText = emoji.suggestedMessage,
                         statusEmoji = emoji.code,
                         expirationTime = {
@@ -143,7 +144,7 @@ class HomeViewModel(
                 "next_week" -> {
                     val emoji = SlackEmoji.HUT
                     log("~ ${emoji.emojiText()} Off-for-the-week ⌛".colored(wipColor))
-                    client.setStatus(
+                    slackAPIClient.setStatus(
                         statusText = "Off for the week",
                         statusEmoji = emoji.code,
                         expirationTime = {
@@ -151,6 +152,21 @@ class HomeViewModel(
                                 .now()
                                 .with(TemporalAdjusters.next(DayOfWeek.MONDAY))
                                 .withHour(7)
+                                .atZone(ZoneId.systemDefault())
+                                .toEpochSecond()
+                        }
+                    ).logResult(emoji.emojiText())
+                }
+
+                "lunch" -> {
+                    val emoji = SlackEmoji.LUNCH
+                    log("~ ${emoji.emojiText()} Lunch-break ⌛".colored(wipColor))
+                    slackAPIClient.setStatus(
+                        statusText = emoji.suggestedMessage,
+                        statusEmoji = emoji.code,
+                        expirationTime = {
+                            LocalDateTime.now()
+                                .plusMinutes(45)
                                 .atZone(ZoneId.systemDefault())
                                 .toEpochSecond()
                         }

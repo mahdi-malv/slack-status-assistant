@@ -62,7 +62,7 @@ fun HomeScreen(
                     .fillMaxWidth(0.6f)
             )
 
-            // == Commands ==
+            // == Quick Commands ==
             LazyRow {
                 items(
                     items = listOf(
@@ -78,6 +78,10 @@ fun HomeScreen(
                         SlackEmoji.RUN.toCommand(
                             id = "nearby",
                             title = "Nearby (5)",
+                        ),
+                        SlackEmoji.LUNCH.toCommand(
+                            id = "lunch",
+                            title = "Lunch (45)",
                         ),
                         SlackEmoji.HUT.toCommand(
                             id = "tomo",
@@ -98,7 +102,7 @@ fun HomeScreen(
                             if (state.commandBlocked) {
                                 viewModel.log("Wait... \uD83D\uDE11".colored(Color(0xFFCA6C25)))
                             } else {
-                                viewModel.onCommandClicked(it)
+                                viewModel.onQuickCommandClicked(it)
                             }
                         },
                         emojiCode = it.emojiText
@@ -106,11 +110,12 @@ fun HomeScreen(
                 }
             }
 
-            // == Custom time ==
+            // == Custom status ==
             CustomStatus(
                 modifier = Modifier
                     .fillMaxWidth(),
                 onApply = viewModel::onCustomStatus,
+                clicksAllowed = !state.commandBlocked,
             )
 
             Spacer(modifier = Modifier.weight(1f))
