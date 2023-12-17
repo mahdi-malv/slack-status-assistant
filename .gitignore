@@ -14,3 +14,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+.idea/deploymentTargetDropDown.xml
+
+.idea/inspectionProfiles/Project_Default.xml
