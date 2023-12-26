@@ -9,6 +9,7 @@ import dk.malv.slack.assistant.api.currentStatus
 import dk.malv.slack.assistant.ui.components.CurrentStatus
 import dk.malv.slack.assistant.ui.components.asUiStatus
 import dk.malv.slack.assistant.api.setStatus
+import dk.malv.slack.assistant.ui.Command
 import dk.malv.slack.assistant.utils.emoji.SlackEmoji
 import dk.malv.slack.assistant.utils.emoji.emojiText
 import dk.malv.slack.assistant.utils.text.colored
@@ -55,9 +56,20 @@ class HomeViewModel(
                         .toPersistentMap()
                 )
             }
-            val status = slackAPIClient.currentStatus()
-            _state.updateInUi {
-                copy(currentStatus = status.asUiStatus())
+            try {
+                val status = slackAPIClient.currentStatus()
+                _state.updateInUi {
+                    copy(currentStatus = status.asUiStatus())
+                }
+            } catch (e: Exception) {
+                _state.updateInUi {
+                    copy(
+                        currentStatus = CurrentStatus.empty(),
+                        logs = logs
+                            .plus(Time.now() to "~ Couldn't update status".colored(wipColor))
+                            .toPersistentMap()
+                    )
+                }
             }
         }
     }

@@ -17,6 +17,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,11 +53,6 @@ fun Console(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            IconButton(
-                onClick = onClear
-            ) {
-                Icon(Icons.Default.Clear, contentDescription = "Clear console", tint = Color.Red)
-            }
             LazyColumn(
                 state = listState,
                 modifier = Modifier
@@ -89,6 +85,14 @@ fun Console(
                         )
                     }
                 }
+            }
+            IconButton(
+                onClick = onClear,
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = Color.Gray.copy(alpha = 0.3f)
+                )
+            ) {
+                Icon(Icons.Default.Clear, contentDescription = "Clear console", tint = Color.Red)
             }
         }
         // If item size changed, scroll to the most recent item
