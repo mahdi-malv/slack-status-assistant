@@ -1,5 +1,6 @@
 package dk.malv.slack.assistant.api
 
+import dk.malv.slack.assistant.api.client.SlackAPIClient
 import dk.malv.slack.assistant.api.model.Profile
 import dk.malv.slack.assistant.api.model.ProfileRequestBody
 import dk.malv.slack.assistant.api.model.UserProfile

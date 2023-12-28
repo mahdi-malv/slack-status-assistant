@@ -179,9 +179,7 @@ fun CustomStatus(
 fun CustomStatusPreview() {
     CustomStatus(
         modifier = Modifier,
-        onApply = { minutes, text, emoji ->
-            // Handle the apply button click event for preview
-        }
+        onApply = { _, _, _ -> }
     )
 }
 
