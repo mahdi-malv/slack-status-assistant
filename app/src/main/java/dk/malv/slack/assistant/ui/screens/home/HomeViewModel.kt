@@ -4,7 +4,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dk.malv.slack.assistant.api.SlackAPIClient
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dk.malv.slack.assistant.api.client.SlackAPIClient
 import dk.malv.slack.assistant.api.currentStatus
 import dk.malv.slack.assistant.ui.components.CurrentStatus
 import dk.malv.slack.assistant.ui.components.asUiStatus
@@ -27,10 +28,12 @@ import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
+import javax.inject.Inject
 
 
-class HomeViewModel(
-    private val slackAPIClient: SlackAPIClient = SlackAPIClient() // Needs DI 😂
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val slackAPIClient: SlackAPIClient
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state get() = _state.asStateFlow()
