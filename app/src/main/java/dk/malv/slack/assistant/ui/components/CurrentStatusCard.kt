@@ -1,6 +1,5 @@
 package dk.malv.slack.assistant.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dk.malv.slack.assistant.R
 import dk.malv.slack.assistant.api.model.UserProfile
-import dk.malv.slack.assistant.utils.emoji.SlackEmoji
-import dk.malv.slack.assistant.utils.emoji.emojiText
+import dk.malv.slack.assistant.utils.SlackEmoji
+import dk.malv.slack.assistant.utils.emojiText
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

@@ -11,11 +11,11 @@ import dk.malv.slack.assistant.ui.components.CurrentStatus
 import dk.malv.slack.assistant.ui.components.asUiStatus
 import dk.malv.slack.assistant.api.setStatus
 import dk.malv.slack.assistant.ui.Command
-import dk.malv.slack.assistant.utils.emoji.SlackEmoji
-import dk.malv.slack.assistant.utils.emoji.emojiText
-import dk.malv.slack.assistant.utils.text.colored
-import dk.malv.slack.assistant.utils.time.Time
-import dk.malv.slack.assistant.utils.time.now
+import dk.malv.slack.assistant.utils.SlackEmoji
+import dk.malv.slack.assistant.utils.emojiText
+import dk.malv.slack.assistant.utils.colored
+import dk.malv.slack.assistant.utils.Time
+import dk.malv.slack.assistant.utils.now
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toPersistentMap

@@ -1,20 +1,17 @@
 package dk.malv.slack.assistant.features.location
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
-import androidx.annotation.RequiresPermission
+import dk.malv.slack.assistant.utils.locationBasedStatusPermissionsGranted
 
-@RequiresPermission(
-    allOf = [
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    ]
-)
+@SuppressLint("MissingPermission") // Already checked
 fun currentLocation(context: Context): Location? {
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+    return if (context.locationBasedStatusPermissionsGranted())
+        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+    else null
 }
 
 

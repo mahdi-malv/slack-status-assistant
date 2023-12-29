@@ -1,18 +1,15 @@
 package dk.malv.slack.assistant.features.location
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
-import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
+import dk.malv.slack.assistant.utils.locationBasedStatusPermissionsGranted
 import java.util.Timer
 import java.util.TimerTask
 
@@ -88,21 +85,3 @@ class LocationTrackingService : Service() {
         .setSmallIcon(android.R.drawable.ic_dialog_map)
         .build()
 }
-
-/**
- * Checks if the required permissions for accessing fine and coarse location are granted.
- * Additionally, for Android version TIRAMISU (API level 30) or higher, it also checks if the permission to post notifications is granted.
- *
- * @return true if all required permissions are granted, false otherwise
- */
-fun Context.locationBasedStatusPermissionsGranted() = arrayOf(
-    Manifest.permission.ACCESS_FINE_LOCATION,
-    Manifest.permission.ACCESS_COARSE_LOCATION,
-).all { ContextCompat.checkSelfPermission(this, it) == PERMISSION_GRANTED } &&
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                this, Manifest.permission.POST_NOTIFICATIONS
-            ) == PERMISSION_GRANTED
-        } else {
-            true
-        }
