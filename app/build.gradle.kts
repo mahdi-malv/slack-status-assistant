@@ -80,12 +80,15 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6")
 
+    // Accompanist permission
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
     // Hilt + Hilts compose
     implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    implementation("com.google.dagger:hilt-android:2.48.1")
-    ksp("com.google.dagger:dagger-compiler:2.48.1")
-    ksp("com.google.dagger:hilt-android-compiler:2.48.1")
+    implementation("com.google.dagger:hilt-android:2.50")
+    ksp("com.google.dagger:dagger-compiler:2.50")
+    ksp("com.google.dagger:hilt-android-compiler:2.50")
 
     val ktorVersion = "1.5.0"
     implementation("io.ktor:ktor-client-android:$ktorVersion")
