@@ -22,8 +22,8 @@ import dk.malv.slack.assistant.ui.components.CustomStatus
 import dk.malv.slack.assistant.ui.components.QuickCommands
 import dk.malv.slack.assistant.ui.screens.home.components.LocationQuickCard
 import dk.malv.slack.assistant.utils.SlackEmoji
-import dk.malv.slack.assistant.utils.emojiText
 import dk.malv.slack.assistant.utils.colored
+import dk.malv.slack.assistant.utils.emojiText
 
 /**
  * Main screen of the app
@@ -37,7 +37,9 @@ fun HomeScreen(
 ) {
     val state by viewModel.state.collectAsState()
     Column(
-        modifier = modifier.fillMaxSize().padding(8.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -54,9 +56,12 @@ fun HomeScreen(
         )
 
         // == Location based tracking ==
-        LocationQuickCard(onSeeClick = {
-            navController.navigate("location")
-        })
+        LocationQuickCard(
+            text = if (state.routingInProgress) "Routing..." else "Location based status",
+            onSeeClick = {
+                navController.navigate("location")
+            }
+        )
 
         // == Custom status ==
         CustomStatus(

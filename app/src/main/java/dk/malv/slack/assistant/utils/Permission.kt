@@ -15,11 +15,4 @@ import androidx.core.content.ContextCompat
 fun Context.locationBasedStatusPermissionsGranted() = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
     Manifest.permission.ACCESS_COARSE_LOCATION,
-).all { ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED } &&
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                this, Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
+).all { ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED }

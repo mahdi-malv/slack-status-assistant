@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "dk.malv.slack.assistant"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -79,6 +79,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6")
+
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 
     // Accompanist permission
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")

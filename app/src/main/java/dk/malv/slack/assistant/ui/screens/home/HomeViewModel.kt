@@ -7,14 +7,16 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.malv.slack.assistant.api.client.SlackAPIClient
 import dk.malv.slack.assistant.api.currentStatus
+import dk.malv.slack.assistant.api.setStatus
+import dk.malv.slack.assistant.receiver.BroadcastAction
+import dk.malv.slack.assistant.receiver.LocalBroadcast
+import dk.malv.slack.assistant.ui.Command
 import dk.malv.slack.assistant.ui.components.CurrentStatus
 import dk.malv.slack.assistant.ui.components.asUiStatus
-import dk.malv.slack.assistant.api.setStatus
-import dk.malv.slack.assistant.ui.Command
 import dk.malv.slack.assistant.utils.SlackEmoji
-import dk.malv.slack.assistant.utils.emojiText
-import dk.malv.slack.assistant.utils.colored
 import dk.malv.slack.assistant.utils.Time
+import dk.malv.slack.assistant.utils.colored
+import dk.malv.slack.assistant.utils.emojiText
 import dk.malv.slack.assistant.utils.now
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -23,6 +25,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDateTime
@@ -33,7 +37,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val slackAPIClient: SlackAPIClient
+    private val slackAPIClient: SlackAPIClient,
+    private val localBroadcast: LocalBroadcast
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state get() = _state.asStateFlow()
@@ -42,8 +47,8 @@ class HomeViewModel @Inject constructor(
 
     init {
         // Update the status on startup
-        // TODO(mahdi): a consistent way to update the status - periodically maybe?
         updateStatus()
+        observeLocalEvents()
     }
 
     /**
@@ -110,6 +115,7 @@ class HomeViewModel @Inject constructor(
                         expirationTime = { 0 }
                     ).logResult("❌")
                 }
+
                 "commute30" -> {
                     val emoji = SlackEmoji.WALK
                     log("~ ${emoji.emojiText()} commute-30 ⌛".colored(wipColor))
@@ -233,6 +239,22 @@ class HomeViewModel @Inject constructor(
 
     // endregion
 
+    private fun observeLocalEvents() {
+        localBroadcast.events
+            .onEach {
+                _state.updateInUi {
+                    copy(
+                        routingInProgress =
+                        it is BroadcastAction.ServiceStarted
+                                || it is BroadcastAction.Destination
+                                || it is BroadcastAction.DistanceUpdated
+                                || it is BroadcastAction.LocationUpdated
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     private fun MutableStateFlow<HomeUiState>.updateInUi(block: suspend HomeUiState.() -> HomeUiState) {
         viewModelScope.launch {
             value = value.block()
@@ -246,5 +268,6 @@ data class HomeUiState(
      */
     val commandBlocked: Boolean = false,
     val logs: ImmutableMap<Time, AnnotatedString> = persistentMapOf(),
-    val currentStatus: CurrentStatus = CurrentStatus.empty()
+    val currentStatus: CurrentStatus = CurrentStatus.empty(),
+    val routingInProgress: Boolean = false
 )

@@ -1,5 +1,8 @@
 package dk.malv.slack.assistant
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,10 +36,20 @@ import dk.malv.slack.assistant.ui.theme.SlackAssistantTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val localBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+
+        }
+
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize Dagger component
+
 
         setContent {
 

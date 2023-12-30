@@ -1,6 +1,7 @@
 package dk.malv.slack.assistant.ui.screens.locationbased
 
 import android.content.Intent
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -14,9 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,21 +33,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.accompanist.permissions.rememberPermissionState
 import com.utsman.osmandcompose.DefaultMapProperties
 import com.utsman.osmandcompose.Marker
+import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.OpenStreetMap
-import com.utsman.osmandcompose.Polygon
 import com.utsman.osmandcompose.ZoomButtonVisibility
-import com.utsman.osmandcompose.rememberCameraState
-import com.utsman.osmandcompose.rememberMarkerState
 import dk.malv.slack.assistant.R
-import dk.malv.slack.assistant.features.location.calculateDistanceInMeters
-import dk.malv.slack.assistant.features.location.currentLocation
-import dk.malv.slack.assistant.utils.log
 import kotlinx.collections.immutable.persistentListOf
-import org.osmdroid.util.GeoPoint
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -87,10 +85,11 @@ fun LocationScreen(
                         .clip(RoundedCornerShape(16.dp))
                 )
                 Spacer(Modifier.height(16.dp))
-                if (state.hasTwoLocations) {
-                    Button(onClick = {}) {
-                        Text(text = "Start routing")
-                    }
+                if (state.officeLocation != null) {
+                    RoutingButton(
+                        routingInProgress = state.routingInProgress,
+                        viewModel::toggleRouting
+                    )
                 }
                 Spacer(Modifier.weight(0.5f))
             }
@@ -157,17 +156,12 @@ private fun MapViewScreen(
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
 
-    val cameraState = rememberCameraState {
-        geoPoint = GeoPoint(55.663563, 12.591235)
-        zoom = 14.0 // optional, default is 5.0
-    }
-
 
     // add node
     Box(modifier = modifier) {
         OpenStreetMap(
             modifier = Modifier.fillMaxSize(),
-            cameraState = cameraState,
+            cameraState = state.cameraState,
             properties = DefaultMapProperties.copy(
                 minZoomLevel = 1.0,
                 zoomButtonVisibility = ZoomButtonVisibility.SHOW_AND_FADEOUT,
@@ -176,60 +170,29 @@ private fun MapViewScreen(
                 viewModel.onLocationSelected(latLng.latitude, latLng.longitude)
             }
         ) {
-            state.locations.let {
-                if (it.first != null) {
-                    log("Marker 1 - ${it.first?.run { latitude to longitude }}")
-                    Marker(
-                        state = rememberMarkerState(
-                            geoPoint = GeoPoint(it.first!!.latitude, it.first!!.longitude)
-                        ),
-                        icon = context.resources.getDrawable(R.drawable.ic_marker, null),
-                        onClick = { _ -> viewModel.removeLocation(it.first); true }
-                    )
-                }
-                if (it.second != null) {
-                    log("Marker 2 - ${it.second?.run { latitude to longitude }}")
-                    Marker(
-                        state = rememberMarkerState(
-                            geoPoint = GeoPoint(it.second!!.latitude, it.second!!.longitude)
-                        ),
-                        icon = context.resources.getDrawable(R.drawable.ic_marker, null),
-                        onClick = { _ -> viewModel.removeLocation(it.second); true }
-                    )
-                }
-                if (state.hasTwoLocations) {
-                    val points = remember(it) {
-                        persistentListOf(
-                            GeoPoint(it.first!!.latitude, it.first!!.longitude),
-                            GeoPoint(it.second!!.latitude, it.second!!.longitude)
-                        )
-                    }
-                    log(
-                        "Distance: ${
-                            calculateDistanceInMeters(
-                                it.first!!,
-                                it.second!!
-                            )
-                        }m - ${it.first?.run { latitude to longitude }} - ${it.second?.run { latitude to longitude }} }"
-                    )
-                    Polygon(
-                        outlineColor = Color(0xFF5ABB99),
-                        geoPoints = points,
-                        title = "Distance: ${calculateDistanceInMeters(it.first!!, it.second!!)}m"
-                    )
-                }
+            state.officeLocation?.let {
+                val markerState = remember(state.officeLocation) { MarkerState(state.officeGeoPoint) }
+                Marker(
+                    state = markerState,
+                    icon = context.resources.getDrawable(R.drawable.ic_marker, null),
+                    onClick = { _ -> viewModel.removeLocation(); true }
+                )
+            }
+
+            if (state.routingInProgress && state.updatedLocation != null) {
+                val markerState = remember(state.updatedLocation) { MarkerState(state.updatedLocationGeoPoint) }
+                Marker(
+                    state = markerState,
+                    icon = context.resources.getDrawable(R.drawable.ic_person, null),
+                )
             }
         }
 
         IconButton(
             modifier = Modifier.align(Alignment.TopEnd),
             colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = Color.White),
-            onClick = {
-                currentLocation(context)?.let {
-                    cameraState.geoPoint = GeoPoint(it.latitude, it.longitude)
-                    cameraState.zoom = 16.0
-                }
-            }) {
+            onClick = viewModel::navigateToCurrentLocation
+        ) {
             Icon(
                 Icons.Filled.LocationOn,
                 modifier = Modifier.size(32.dp),
@@ -238,28 +201,72 @@ private fun MapViewScreen(
             )
         }
 
-        IconButton(
-            modifier = Modifier.align(Alignment.TopStart),
-            colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = Color.White),
-            onClick = viewModel::clearMarkers) {
-            Icon(
-                Icons.Filled.Clear,
-                modifier = Modifier.size(32.dp),
-                tint = Color(0xFFFF6A2E),
-                contentDescription = "Clear"
-            )
-        }
-
-        if (state.hasTwoLocations) {
+        if (state.officeLocation != null) {
             Text(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Color.White)
-                    .padding(2.dp),
-                text = "${calculateDistanceInMeters(state.locations.first!!, state.locations.second!!)}m",
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(if (state.routingInProgress) Color.Blue else Color.White)
+                    .padding(8.dp),
+                text = viewModel.distanceInMeters().let {
+                    if (it == 0) "Unknown distance" else "${it}m away"
+                },
+                fontSize = 11.sp
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun RoutingButton(
+    routingInProgress: Boolean,
+    onClick: () -> Unit
+) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val permissionState = rememberPermissionState(
+            android.Manifest.permission.POST_NOTIFICATIONS
+        )
+
+        when {
+            permissionState.status.isGranted -> {
+                Button(
+                    onClick = onClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (routingInProgress)
+                            Color(0xFFB46605)
+                        else Color(0xFF026296)
+                    )
+                ) {
+                    Text(text = if (routingInProgress) "Stop routing" else "Start routing")
+                }
+            }
+
+            else -> {
+                Button(
+                    onClick = {
+                        permissionState.launchPermissionRequest()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (routingInProgress)
+                            Color(0xFFB46605)
+                        else Color(0xFF026296)
+                    )
+                ) {
+                    Text(text = "Routing: Allow permission")
+                }
+            }
+        }
+    } else {
+        Button(
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (routingInProgress)
+                    Color(0xFFB46605)
+                else Color(0xFF026296)
+            )
+        ) {
+            Text(text = if (routingInProgress) "Stop routing" else "Start routing")
         }
     }
 }

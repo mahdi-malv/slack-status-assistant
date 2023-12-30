@@ -1,5 +1,6 @@
 package dk.malv.slack.assistant.ui.screens.home.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,29 +26,18 @@ import androidx.compose.ui.unit.dp
 fun LocationQuickCard(
     onSeeClick: () -> Unit,
     modifier: Modifier = Modifier,
+    text: String = "Location based status",
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(68.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFEDEDED)
-        )
+            .height(68.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxSize().padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "Location based status")
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "New!",
-                color = Color.White,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF18641A))
-                    .padding(4.dp)
-            )
+            Text(text = text)
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = onSeeClick) {
                 Text(text = "Details")
