@@ -31,8 +31,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dk.malv.slack.assistant.utils.text.annotated
-import dk.malv.slack.assistant.utils.time.Time
+import dk.malv.slack.assistant.utils.annotated
+import dk.malv.slack.assistant.utils.Time
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
 

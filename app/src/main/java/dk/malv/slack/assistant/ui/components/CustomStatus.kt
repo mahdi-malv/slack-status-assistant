@@ -34,8 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dk.malv.slack.assistant.utils.emoji.SlackEmoji
-import dk.malv.slack.assistant.utils.emoji.emojiText
+import dk.malv.slack.assistant.utils.SlackEmoji
+import dk.malv.slack.assistant.utils.emojiText
 
 /**
  * Composable function to display a custom status UI with emoji icons, text field, seekbar, and apply button.
@@ -63,7 +63,7 @@ fun CustomStatus(
     clicksAllowed: Boolean = true,
     onApply: (minutes: Int, text: String, emoji: SlackEmoji) -> Unit
 ) = Card(
-    modifier = modifier.padding(16.dp),
+    modifier = modifier,
     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     shape = RoundedCornerShape(8.dp),
     colors = CardDefaults.cardColors(
@@ -179,9 +179,7 @@ fun CustomStatus(
 fun CustomStatusPreview() {
     CustomStatus(
         modifier = Modifier,
-        onApply = { minutes, text, emoji ->
-            // Handle the apply button click event for preview
-        }
+        onApply = { _, _, _ -> }
     )
 }
 

@@ -1,4 +1,4 @@
-package dk.malv.slack.assistant.utils.text
+package dk.malv.slack.assistant.utils
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString

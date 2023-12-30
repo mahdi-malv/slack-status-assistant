@@ -4,6 +4,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlinx-serialization")
+    id("com.google.dagger.hilt.android")
+    id ("com.google.devtools.ksp")
 }
 
 android {
@@ -12,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "dk.malv.slack.assistant"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -78,6 +80,18 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6")
 
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
+
+    // Accompanist permission
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    // Hilt + Hilts compose
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("com.google.dagger:hilt-android:2.50")
+    ksp("com.google.dagger:dagger-compiler:2.50")
+    ksp("com.google.dagger:hilt-android-compiler:2.50")
+
     val ktorVersion = "1.5.0"
     implementation("io.ktor:ktor-client-android:$ktorVersion")
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
@@ -85,7 +99,11 @@ dependencies {
     implementation("io.ktor:ktor-client-logging-jvm:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
+    // Location
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    // OSM_Compose
+    implementation("org.osmdroid:osmdroid-android:6.1.16")
+    implementation("tech.utsmankece:osm-android-compose:0.0.5")
 
 
     testImplementation("junit:junit:4.13.2")

@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dk.malv.slack.assistant.ui.Command
 import dk.malv.slack.assistant.ui.screens.home.toCommand
-import dk.malv.slack.assistant.utils.emoji.SlackEmoji
+import dk.malv.slack.assistant.utils.SlackEmoji
 
 @ExperimentalMaterial3Api
 @Composable

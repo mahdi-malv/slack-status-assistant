@@ -1,4 +1,4 @@
-package dk.malv.slack.assistant.utils.time
+package dk.malv.slack.assistant.utils
 
 import android.icu.text.SimpleDateFormat
 import java.util.Date

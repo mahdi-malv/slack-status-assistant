@@ -1,6 +1,4 @@
-package dk.malv.slack.assistant.utils.emoji
-
-import dk.malv.slack.assistant.R
+package dk.malv.slack.assistant.utils
 
 /**
  * TODO(mahdi): Use this as the emoji component in all components
