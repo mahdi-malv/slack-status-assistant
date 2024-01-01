@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -72,6 +73,7 @@ fun UserProfile.asUiStatus(): CurrentStatus = CurrentStatus(
  * @param currentStatus The current status of the user.
  * @param modifier Optional modifier for the card.
  */
+@ExperimentalMaterial3Api
 @Composable
 fun CurrentStatusCard(
     currentStatus: CurrentStatus,
@@ -168,6 +170,7 @@ fun CurrentStatusCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun CurrentStatusCardPreview() {

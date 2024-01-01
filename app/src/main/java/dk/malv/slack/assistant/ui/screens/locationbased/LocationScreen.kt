@@ -171,7 +171,8 @@ private fun MapViewScreen(
             }
         ) {
             state.officeLocation?.let {
-                val markerState = remember(state.officeLocation) { MarkerState(state.officeGeoPoint) }
+                val markerState =
+                    remember(state.officeLocation) { MarkerState(state.officeGeoPoint) }
                 Marker(
                     state = markerState,
                     icon = context.resources.getDrawable(R.drawable.ic_marker, null),
@@ -180,7 +181,8 @@ private fun MapViewScreen(
             }
 
             if (state.routingInProgress && state.updatedLocation != null) {
-                val markerState = remember(state.updatedLocation) { MarkerState(state.updatedLocationGeoPoint) }
+                val markerState =
+                    remember(state.updatedLocation) { MarkerState(state.updatedLocationGeoPoint) }
                 Marker(
                     state = markerState,
                     icon = context.resources.getDrawable(R.drawable.ic_person, null),
@@ -217,7 +219,7 @@ private fun MapViewScreen(
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
+@ExperimentalPermissionsApi
 @Composable
 private fun RoutingButton(
     routingInProgress: Boolean,
@@ -230,43 +232,35 @@ private fun RoutingButton(
 
         when {
             permissionState.status.isGranted -> {
-                Button(
-                    onClick = onClick,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (routingInProgress)
-                            Color(0xFFB46605)
-                        else Color(0xFF026296)
-                    )
-                ) {
-                    Text(text = if (routingInProgress) "Stop routing" else "Start routing")
-                }
+                ToggleButton(routingInProgress = routingInProgress, onClick = onClick)
             }
 
             else -> {
-                Button(
-                    onClick = {
-                        permissionState.launchPermissionRequest()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (routingInProgress)
-                            Color(0xFFB46605)
-                        else Color(0xFF026296)
-                    )
-                ) {
-                    Text(text = "Routing: Allow permission")
-                }
+                ToggleButton(
+                    routingInProgress = routingInProgress,
+                    onClick = permissionState::launchPermissionRequest
+                )
             }
         }
     } else {
-        Button(
-            onClick = onClick,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (routingInProgress)
-                    Color(0xFFB46605)
-                else Color(0xFF026296)
-            )
-        ) {
-            Text(text = if (routingInProgress) "Stop routing" else "Start routing")
-        }
+        ToggleButton(routingInProgress = routingInProgress, onClick = onClick)
+    }
+}
+
+@Composable
+private fun ToggleButton(
+    routingInProgress: Boolean,
+    onClick: () -> Unit,
+    text: String = ""
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (routingInProgress)
+                Color(0xFFB46605)
+            else Color(0xFF026296)
+        )
+    ) {
+        Text(text = text.ifEmpty { if (routingInProgress) "Stop routing" else "Start routing" })
     }
 }
