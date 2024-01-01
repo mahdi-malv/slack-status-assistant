@@ -1,8 +1,5 @@
 package dk.malv.slack.assistant
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,25 +31,14 @@ import dk.malv.slack.assistant.ui.screens.locationbased.LocationScreen
 import dk.malv.slack.assistant.ui.theme.SlackAssistantTheme
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val localBroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-
-        }
-
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize Dagger component
-
-
         setContent {
-
             val navController = rememberNavController()
 
             SlackAssistantTheme {
@@ -91,7 +77,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun MainTopBar(
         currentStatus: CurrentStatus,
