@@ -100,6 +100,7 @@ fun CurrentStatusCard(
     if (currentStatus.isEmpty) {
         Card(
             modifier = modifier,
+            onClick = onReloadClick
         ) {
             Box(
                 modifier = Modifier
