@@ -29,6 +29,7 @@ import javax.inject.Inject
 
 private const val NOTIFICATION_ID = 0x123485
 private const val NOTIFICATION_CHANNEL_ID = "location_tracking_channel"
+private const val REQUEST_INTERVAL = 30_000L
 
 @AndroidEntryPoint
 class RequestService : Service() {
@@ -85,8 +86,8 @@ class RequestService : Service() {
     @SuppressLint("MissingPermission")
     private fun periodicallyRequestForLocation() {
         val request = LocationRequest.Builder(
-            Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-            15000,
+            /* priority = */ Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+            /* intervalMillis = */ REQUEST_INTERVAL,
         ).build()
 
 
