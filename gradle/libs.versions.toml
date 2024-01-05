@@ -1,0 +1,67 @@
+[versions]
+ktx = "1.12.0"
+lifecycle-runtime = "2.6.2"
+activity-compose = "1.8.2"
+compose-bom = "2023.10.01"
+material3 = "1.1.2"
+ktor = "1.5.0"
+serialization-json = "1.6.0"
+play-services-location = "21.0.1"
+osmdroid = "6.1.16"
+osm-android-compose = "0.0.5"
+junit = "4.13.2"
+mockk = "1.13.8"
+junit-ktx = "1.1.5"
+coroutines-test = "1.7.3"
+espresso-core = "3.5.1"
+accompanist-permissions = "0.32.0"
+navigation-compose = "2.7.6"
+hilt-navigation-compose = "1.1.0"
+hilt = "2.50"
+ksp = "1.9.20-1.0.14"
+kotlin = "1.9.20"
+kotlin-collection = "0.3.6"
+agp = "8.2.1"
+
+[libraries]
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
+androidx-lifecycle-runtimeKtx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx-test-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "junit-ktx" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
+
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4"}
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+compose-activity = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "hilt" }
+gms-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-collection" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization-json" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-loggingJvm = { module = "io.ktor:ktor-client-logging-jvm", version.ref = "ktor" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
+androidx-localbroadcastmanager = { module = "androidx.localbroadcastmanager:localbroadcastmanager", version = "1.1.0" }
+mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+osm-compose = { module = "tech.utsmankece:osm-android-compose", version.ref = "osm-android-compose" }
+osm-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroid" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
