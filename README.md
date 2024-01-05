@@ -32,4 +32,5 @@ instead I wanted to try new things and have some fun with functional approach in
 ## Future TODO
 - [ ] Add snooze functionality
 - [ ] Add set presence functionality
+- [ ] Load user token in runtime
 - [x] Update future automated setter tasks
