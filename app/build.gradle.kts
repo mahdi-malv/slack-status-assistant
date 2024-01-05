@@ -56,7 +56,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
     packaging {
         resources {
@@ -66,59 +66,59 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtimeKtx)
+    implementation(libs.androidx.localbroadcastmanager)
+    implementation(libs.androidx.material3)
 
-    //noinspection GradleDependency
-    implementation("androidx.core:core-ktx:1.10.1")
-    //noinspection GradleDependency
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    //noinspection GradleDependency
-    implementation("androidx.activity:activity-compose:1.7.0")
-    implementation(platform("androidx.compose:compose-bom:2023.10.01"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6")
+//    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.ui.graphics)
+    implementation(libs.compose.navigation)
+    implementation(libs.compose.activity)
 
-    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
+    implementation(libs.kotlinx.collections.immutable)
 
     // Accompanist permission
-    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    implementation(libs.accompanist.permissions)
 
     // Hilt + Hilts compose
-    implementation("androidx.navigation:navigation-compose:2.7.6")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    implementation("com.google.dagger:hilt-android:2.50")
-    ksp("com.google.dagger:dagger-compiler:2.50")
-    ksp("com.google.dagger:hilt-android-compiler:2.50")
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    ksp(libs.dagger.compiler)
+    ksp(libs.hilt.android.compiler)
 
-    val ktorVersion = "1.5.0"
-    implementation("io.ktor:ktor-client-android:$ktorVersion")
-    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-    //noinspection GradleDependency
-    implementation("io.ktor:ktor-client-logging-jvm:$ktorVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    // Ktor
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.serialization)
+    implementation(libs.ktor.client.loggingJvm)
+    implementation(libs.kotlinx.serialization.json)
 
     // Location
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation(libs.gms.location)
+
     // OSM_Compose
-    implementation("org.osmdroid:osmdroid-android:6.1.16")
-    implementation("tech.utsmankece:osm-android-compose:0.0.5")
+    implementation(libs.osm.android)
+    implementation(libs.osm.compose)
 
+    // Test dependencies
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.mockk.agent)
+    testImplementation(libs.androidx.test.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("io.mockk:mockk-android:1.13.8")
-    testImplementation("io.mockk:mockk-agent:1.13.8")
-    testImplementation("androidx.test.ext:junit-ktx:1.1.5")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    // Android test dependencies
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockk.agent)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
 
-
-    androidTestImplementation("io.mockk:mockk-android:1.13.8")
-    androidTestImplementation("io.mockk:mockk-agent:1.13.8")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // Debug dependencies
+    debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
 }
