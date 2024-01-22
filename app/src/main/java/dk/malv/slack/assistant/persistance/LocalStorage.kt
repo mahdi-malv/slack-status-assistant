@@ -2,6 +2,8 @@ package dk.malv.slack.assistant.persistance
 
 import android.content.SharedPreferences
 import android.location.Location
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 /**
@@ -105,6 +107,60 @@ class LocalStorage @Inject constructor(private val sharedPref: SharedPreferences
      */
     fun getFloat(key: String, defaultValue: Float = 0f): Float {
         return sharedPref.getFloat(key, defaultValue)
+    }
+
+    /**
+     * Save a Map of String, String to SharedPreferences.
+     *
+     * @param key The key under which the map will be saved
+     * @param map The map of String, String to be saved
+     */
+    fun saveStringMap(key: String, map: Map<String, String>) {
+        with(sharedPref.edit()) {
+            putString(key, Json.encodeToString(map))
+            apply()
+        }
+    }
+
+    /**
+     * Save a List of String to SharedPreferences.
+     *
+     * @param key The key under which the list will be saved
+     * @param list The list of String to be saved
+     */
+    fun saveStringList(key: String, list: List<String>) {
+        with(sharedPref.edit()) {
+            putString(key, Json.encodeToString(list))
+            apply()
+        }
+    }
+
+    /**
+     * Retrieve a List of String from SharedPreferences.
+     *
+     * @param key The key under which the list is saved
+     * @return The retrieved list of String, or an empty list if the key is not found
+     */
+    fun getStringList(key: String): List<String> {
+        val json = sharedPref.getString(key, null)
+        return if (json != null) {
+            Json.decodeFromString<List<String>>(json)
+        } else {
+            emptyList()
+        }
+    }
+
+    /**
+     * Modify a value in the List of String stored in SharedPreferences.
+     *
+     * @param key The key under which the list is saved
+     * @param index The index in the list to be modified
+     * @param newValue The new value to be set at the specified index
+     */
+    fun modifyStringListValue(key: String, newValue: String) {
+        val list = getStringList(key).toMutableList()
+        list.add(newValue)
+        saveStringList(key, list)
     }
 
     fun remove(key: String) {
