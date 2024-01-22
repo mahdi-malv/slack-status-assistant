@@ -9,11 +9,16 @@ import com.utsman.osmandcompose.CameraState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.malv.slack.assistant.api.client.SlackAPIClient
 import dk.malv.slack.assistant.api.setStatus
+import dk.malv.slack.assistant.features.commutelog.CommuteLogPersistence
+import dk.malv.slack.assistant.features.commutelog.CommuteEntry
 import dk.malv.slack.assistant.features.location.DistanceController
 import dk.malv.slack.assistant.features.location.LocationServiceController
 import dk.malv.slack.assistant.persistance.LocalStorage
 import dk.malv.slack.assistant.receiver.BroadcastAction
 import dk.malv.slack.assistant.receiver.LocalBroadcast
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -31,7 +36,8 @@ class LocationViewModel @Inject constructor(
     private val distanceController: DistanceController,
     private val serviceController: LocationServiceController,
     private val slackAPIClient: SlackAPIClient,
-    private val localBroadcast: LocalBroadcast
+    private val localBroadcast: LocalBroadcast,
+    private val commuteLog: CommuteLogPersistence
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         LocationScreenState(
@@ -49,6 +55,7 @@ class LocationViewModel @Inject constructor(
 
     init {
         observeLocalEvents()
+        observeCommuteTimes()
     }
 
     fun userNotifiedOfPermission() {
@@ -131,6 +138,13 @@ class LocationViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
+    private fun observeCommuteTimes() {
+        commuteLog.commuteTimes
+            .onEach { times ->
+                _state.update { it.copy(commuteEntries = times.toImmutableList()) }
+            }.launchIn(viewModelScope)
+    }
+
     private fun clearSlackStatus() {
         viewModelScope.launch { slackAPIClient.setStatus("", "", false) { 0 } }
     }
@@ -143,7 +157,8 @@ data class LocationScreenState(
     val cameraState: CameraState = CameraState(CameraProperty()),
     val routingInProgress: Boolean = false,
     val updatedLocation: Location? = null,
-    val updatedDistance: Int = 0
+    val updatedDistance: Int = 0,
+    val commuteEntries: ImmutableList<CommuteEntry> = persistentListOf()
 ) {
     val officeGeoPoint: GeoPoint = officeLocation?.let {
         GeoPoint(it.latitude, it.longitude)

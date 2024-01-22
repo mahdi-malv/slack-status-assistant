@@ -44,6 +44,7 @@ import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.ZoomButtonVisibility
 import dk.malv.slack.assistant.R
+import dk.malv.slack.assistant.ui.screens.locationbased.components.CommuteLogs
 import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -91,7 +92,12 @@ fun LocationScreen(
                         viewModel::toggleRouting
                     )
                 }
-                Spacer(Modifier.weight(0.5f))
+                Spacer(Modifier.weight(0.05f))
+                Card(
+                    modifier = Modifier.weight(0.45f)
+                ) {
+                    CommuteLogs(commuteTimes = state.commuteEntries, showIfEmpty = false)
+                }
             }
         }
 

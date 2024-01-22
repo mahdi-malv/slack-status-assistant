@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dk.malv.slack.assistant.R
 import dk.malv.slack.assistant.api.client.SlackAPIClient
 import dk.malv.slack.assistant.api.setStatus
+import dk.malv.slack.assistant.features.commutelog.CommuteLogPersistence
 import dk.malv.slack.assistant.receiver.BroadcastAction
 import dk.malv.slack.assistant.receiver.LocalBroadcast
 import dk.malv.slack.assistant.utils.log
@@ -33,6 +34,7 @@ private const val REQUEST_INTERVAL = 30_000L
 
 @AndroidEntryPoint
 class RequestService : Service() {
+    var startTime: Long? = null
 
     @Inject
     lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -45,6 +47,9 @@ class RequestService : Service() {
 
     @Inject
     lateinit var localBroadcast: LocalBroadcast
+
+    @Inject
+    lateinit var commuteLog: CommuteLogPersistence
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val notificationManager get() = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -66,6 +71,7 @@ class RequestService : Service() {
         createChannel()
 
         localBroadcast.send(BroadcastAction.ServiceStarted)
+        startTime = System.currentTimeMillis()
         startForeground(
             NOTIFICATION_ID,
             notifyOf("Location Tracking Service", "Tracking your location")
@@ -109,6 +115,7 @@ class RequestService : Service() {
                     expirationTime = { 0 }
                 )
                 localBroadcast.send(BroadcastAction.Destination)
+                saveCommuteTime()
                 stopSelf()
                 return@launch
             }
@@ -138,6 +145,10 @@ class RequestService : Service() {
         super.onDestroy()
         fusedLocationClient.removeLocationUpdates(::locationUpdated)
         serviceScope.cancel()
+    }
+
+    private fun saveCommuteTime() {
+        commuteLog.saveCommute(startTime ?: return, System.currentTimeMillis())
     }
 
     private fun createChannel() {
