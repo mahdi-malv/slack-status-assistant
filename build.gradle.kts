@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.android) apply false
+    id("com.github.ben-manes.versions") version "0.52.0"
 }
 
 // Enable experimental context receivers in kotlin compiler
